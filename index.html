@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo F5 - Consultoria Estratégica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral (stone) with a Dark Slate Blue accent -->
+    <!-- Application Structure Plan: The application transforms the dense strategic guide into a user-centric narrative. It starts with a Hero section (Mission), moves to 'Nossos Serviços' (Value Proposition), then to an interactive 'Para Quem' (Client Segments with JS filtering), followed by 'Nosso Processo' (Activities visualized as a timeline). The 'Nossa Estrutura' section combines Partners, Resources, Revenue, and Costs to build trust and transparency. This flow guides a potential client from understanding the value to seeing the solid foundation of the business, which is more persuasive than the original document's structure. -->
+    <!-- Visualization & Content Choices: 1. Value Proposition -> Goal: Inform -> Method: HTML/Tailwind cards -> Interaction: Hover effect -> Justification: Breaks down the 9 value points into digestible, visually appealing blocks. 2. Client Segments -> Goal: Filter/Relate -> Method: JS filter buttons & dynamic text -> Interaction: Click buttons to show a tailored list of services for each segment -> Justification: Personalizes the experience, making the value proposition immediately relevant to the user. 3. Activities Principais -> Goal: Organize -> Method: HTML/CSS vertical timeline -> Interaction: Visual path -> Justification: Translates the list of activities into a clear, understandable 4-step client journey. 4. Revenue/Costs -> Goal: Compare -> Method: Chart.js Bar Charts -> Interaction: Hover tooltips -> Justification: Bar charts offer a clearer comparison of the magnitude of different revenue/cost streams than a donut chart, enhancing financial transparency. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4338ca; /* indigo-700 */
+            border-bottom-color: #4338ca;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: white;
+            border: 1px solid #e2e8f0; /* slate-200 */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .client-button.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            border-color: #4f46e5;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 28px;
+            bottom: 0;
+            width: 2px;
+            background-color: #cbd5e1; /* slate-300 */
+        }
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 28px;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background-color: #4f46e5; /* indigo-600 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-slate-800">Grupo F5</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#services" class="nav-link font-medium text-slate-600 border-b-2 border-transparent">Serviços</a>
+                <a href="#clients" class="nav-link font-medium text-slate-600 border-b-2 border-transparent">Clientes</a>
+                <a href="#process" class="nav-link font-medium text-slate-600 border-b-2 border-transparent">Processo</a>
+                <a href="#contact" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-indigo-700 transition-colors duration-300">Agendar Consulta</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-slate-800">
+                <span class="sr-only">Abrir menu</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+             <a href="#services" class="block py-2 text-slate-600 font-medium">Serviços</a>
+             <a href="#clients" class="block py-2 text-slate-600 font-medium">Clientes</a>
+             <a href="#process" class="block py-2 text-slate-600 font-medium">Processo</a>
+             <a href="#contact" class="block mt-3 bg-indigo-600 text-white px-5 py-2 rounded-full font-semibold text-center">Agendar Consulta</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="container mx-auto px-6 py-24 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">Consultoria Estratégica para sua Prosperidade Financeira</h2>
+            <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">O Grupo F5 traduz a complexidade financeira em clareza, segurança e crescimento, construindo planos personalizados para que você e sua empresa atinjam seu máximo potencial.</p>
+        </section>
+
+        <section id="services" class="py-20 bg-slate-100">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Nossos Serviços</h3>
+                    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Nesta seção, exploramos nossa proposta de valor. Cada serviço é um pilar na construção da sua estabilidade e sucesso financeiro, desenhado para entregar resultados concretos e duradouros.</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Tranquilidade Financeira</h4>
+                        <p>Planos para aposentadoria, compra de bens e educação dos filhos, visando segurança e realização de objetivos.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Simplificação e Organização</h4>
+                        <p>Descomplicamos finanças, organizando dívidas, receitas e despesas de forma clara e gerenciável.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Educação Financeira</h4>
+                        <p>Capacitamos você com conhecimento para tomar decisões financeiras mais conscientes e estratégicas.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Otimização de Fluxo de Caixa</h4>
+                        <p>Analisamos e reestruturamos seu fluxo de caixa para melhorar a liquidez e a saúde financeira do negócio.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Redução de Custos</h4>
+                        <p>Identificamos oportunidades de corte de despesas e renegociação para aumentar sua eficiência operacional.</p>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h4 class="text-xl font-bold text-indigo-700 mb-2">Aumento de Lucratividade</h4>
+                        <p>Desenvolvemos estratégias de precificação e gestão de custos para maximizar seus lucros.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="clients" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Soluções Sob Medida</h4>
+                    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Cada cliente é único. Esta seção interativa permite que você explore como nossos serviços se adaptam às necessidades específicas do seu perfil. Selecione uma categoria para descobrir.</p>
+                </div>
+                <div class="flex justify-center flex-wrap gap-3 mb-10">
+                    <button data-filter="pme" class="client-button active border text-slate-600 px-5 py-2 rounded-full transition-colors duration-300 font-semibold">Pequenas e Médias Empresas</button>
+                    <button data-filter="ei" class="client-button border text-slate-600 px-5 py-2 rounded-full transition-colors duration-300 font-semibold">Empreendedores Individuais</button>
+                    <button data-filter="pf" class="client-button border text-slate-600 px-5 py-2 rounded-full transition-colors duration-300 font-semibold">Pessoas Físicas</button>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="bg-white p-8 rounded-lg shadow-sm border border-slate-200">
+                        <h4 id="client-title" class="text-2xl font-bold text-slate-800 mb-4">Para Pequenas e Médias Empresas</h4>
+                        <p id="client-description" class="text-slate-600 mb-6">Focamos em PMEs que buscam crescimento sustentável, sejam startups, empresas familiares ou negócios com desafios de caixa. Nosso objetivo é fortalecer sua estrutura para o sucesso a longo prazo.</p>
+                        <ul id="client-services-list" class="space-y-3 text-slate-700">
+                        </ul>
+                    </div>
+                    <div class="bg-indigo-700 text-white p-8 rounded-lg flex flex-col justify-center">
+                         <h4 class="text-2xl font-bold mb-3">Parceiros Estratégicos</h4>
+                         <p class="opacity-90">Colaboramos com uma rede de especialistas para entregar a solução mais completa:</p>
+                         <ul class="mt-4 space-y-2 opacity-90">
+                            <li class="flex items-center gap-3"><span>✓</span> Contadores e Advogados</li>
+                            <li class="flex items-center gap-3"><span>✓</span> Instituições Financeiras</li>
+                            <li class="flex items-center gap-3"><span>✓</span> Desenvolvedores de Software</li>
+                         </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="py-20 bg-slate-100">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Nosso Processo de Consultoria</h3>
+                    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Para garantir resultados consistentes e transparentes, seguimos um processo claro de quatro etapas. Esta seção detalha a jornada que trilhamos com cada cliente, do diagnóstico inicial ao acompanhamento contínuo.</p>
+                </div>
+                <div class="max-w-2xl mx-auto">
+                    <div class="relative pl-8">
+                        <div class="timeline-item pb-12">
+                            <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-1">1. Diagnóstico e Análise</h4>
+                            <p class="text-slate-600">Mergulhamos na sua realidade financeira para entender seus desafios e oportunidades. Utilizamos análises de relatórios, indicadores e entrevistas para construir um panorama completo.</p>
+                        </div>
+                        <div class="timeline-item pb-12">
+                             <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-1">2. Desenvolvimento da Estratégia</h4>
+                            <p class="text-slate-600">Com base no diagnóstico, criamos um plano de ação personalizado. Definimos metas claras, KPIs e uma metodologia robusta para modelagem financeira e valuation, se necessário.</p>
+                        </div>
+                        <div class="timeline-item pb-12">
+                             <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-1">3. Implementação e Suporte</h4>
+                            <p class="text-slate-600">Não apenas entregamos um plano, nós o ajudamos a executá-lo. Oferecemos suporte ativo e gerenciamento de projeto para garantir que as estratégias saiam do papel.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-1">4. Acompanhamento e Otimização</h4>
+                            <p class="text-slate-600">O sucesso financeiro é contínuo. Monitoramos os resultados através de relatórios e dashboards, realizando ajustes e garantindo a qualidade e a melhoria contínua dos resultados.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="structure" class="py-20">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-slate-800">Nossa Estrutura de Negócio</h4>
+                    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">A transparência é fundamental em nosso relacionamento. Aqui, apresentamos visualmente como nosso modelo de negócio funciona, detalhando nossas principais fontes de receita e estrutura de custos.</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h4 class="text-2xl font-bold text-center mb-6 text-slate-700">Fontes de Receita</h4>
+                        <div class="chart-container">
+                             <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-center mb-6 text-slate-700">Estrutura de Custos</h4>
+                        <div class="chart-container">
+                            <canvas id="costsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 bg-indigo-800 text-white">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Pronto para transformar sua gestão financeira?</h3>
+                <p class="text-indigo-200 mb-8 max-w-2xl mx-auto">O primeiro passo para a clareza e o crescimento financeiro está a um clique de distância. Agende uma conversa inicial conosco e descubra como o Grupo F5 pode impulsionar seus resultados.</p>
+                <a href="#" class="bg-white text-indigo-700 px-8 py-3 rounded-full font-bold hover:bg-slate-100 transition-colors duration-300 text-lg shadow-lg">Fale com um Especialista</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-100 py-8">
+        <div class="container mx-auto px-6 text-center text-slate-500">
+            <p>&copy; 2025 Grupo F5. Todos os direitos reservados. Consultoria Estratégica para Pessoas e Empresas.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const clientData = {
+                pme: {
+                    title: 'Para Pequenas e Médias Empresas',
+                    description: 'Focamos em PMEs que buscam crescimento sustentável, sejam startups, empresas familiares ou negócios com desafios de caixa. Nosso objetivo é fortalecer sua estrutura para o sucesso a longo prazo.',
+                    services: [
+                        'Otimização de Fluxo de Caixa',
+                        'Redução de Custos e Despesas',
+                        'Aumento de Lucratividade',
+                        'Acesso a Capital',
+                        'Otimização Tributária'
+                    ]
+                },
+                ei: {
+                    title: 'Para Empreendedores Individuais',
+                    description: 'Apoiamos profissionais que transformaram seu talento em negócio. Ajudamos a organizar as finanças, separar contas PF/PJ, otimizar impostos e precificar serviços para garantir a lucratividade.',
+                    services: [
+                        'Precificação Estratégica',
+                        'Simplificação e Organização Financeira',
+                        'Otimização Tributária',
+                        'Educação Financeira Personalizada'
+                    ]
+                },
+                pf: {
+                    title: 'Para Pessoas Físicas',
+                    description: 'Atendemos indivíduos e famílias de alta renda que buscam organizar seu patrimônio e planejar o futuro com segurança, desde a aposentadoria até a educação dos filhos.',
+                    services: [
+                        'Tranquilidade Financeira (Planejamento)',
+                        'Simplificação e Organização de Dívidas',
+                        'Educação Financeira Personalizada'
+                    ]
+                }
+            };
+
+            const clientButtons = document.querySelectorAll('.client-button');
+            const clientTitle = document.getElementById('client-title');
+            const clientDescription = document.getElementById('client-description');
+            const clientServicesList = document.getElementById('client-services-list');
+
+            function updateClientInfo(filter) {
+                const data = clientData[filter];
+                clientTitle.textContent = data.title;
+                clientDescription.textContent = data.description;
+                clientServicesList.innerHTML = data.services.map(service => 
+                    `<li class="flex items-center gap-3"><span class="text-indigo-500 font-bold">✓</span>${service}</li>`
+                ).join('');
+            }
+
+            clientButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.dataset.filter;
+                    clientButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateClientInfo(filter);
+                });
+            });
+            
+            updateClientInfo('pme');
+
+            const commonChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                           color: '#e2e8f0' // slate-200
+                        },
+                        ticks: {
+                           color: '#64748b' // slate-500
+                        }
+                    },
+                    y: {
+                         grid: {
+                           display: false
+                        },
+                        ticks: {
+                           color: '#334155' // slate-700
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b', // slate-800
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.formattedValue}%`;
+                            }
+                        }
+                    }
+                }
+            };
+
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Honorários por Projeto', 'Taxa de Retainer', 'Comissão / Indicação', 'Venda de Conteúdo'],
+                    datasets: [{
+                        label: 'Fontes de Receita',
+                        data: [50, 35, 10, 5],
+                        backgroundColor: '#6366f1', // indigo-500
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                    }]
+                },
+                options: commonChartOptions
+            });
+
+            const costsCtx = document.getElementById('costsChart').getContext('2d');
+            new Chart(costsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pessoal', 'Marketing e Vendas', 'Tecnologia', 'Infraestrutura', 'Outros'],
+                    datasets: [{
+                        label: 'Estrutura de Custos',
+                        data: [55, 20, 10, 10, 5],
+                        backgroundColor: '#64748b', // slate-500
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: commonChartOptions
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active');
+                            if(link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                     if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                     }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
