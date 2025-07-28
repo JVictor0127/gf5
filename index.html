@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Corporate Blue & Neutral (#0A2342, #1E40AF, #F0F2F5, #FFFFFF) -->
-    <!-- Application Structure Plan: The SPA is structured as a corporate dashboard telling a strategic story. It starts with the core identity ('Quem Somos'), then moves to an interactive exploration of 'Serviços' and 'Clientes'. A visual 'Processo' section clarifies the client journey. This flow is designed for clarity and engagement, guiding stakeholders from brand identity to operational and strategic depth. The SWOT analysis and business structure sections have been removed as requested. New additions include a contact form modal, a cookie consent banner, and modals for Privacy Policy and Terms of Use for enhanced user interaction and compliance. -->
+    <!-- Application Structure Plan: The SPA is structured as a corporate dashboard telling a strategic story. It starts with the core identity ('Quem Somos'), then moves to an interactive exploration of 'Serviços' and 'Clientes'. A visual 'Processo' section clarifies the client journey. This flow is designed for clarity and engagement, guiding stakeholders from brand identity to operational and strategic depth. The SWOT analysis and business structure sections have been removed as requested. New additions include a contact form modal with a single submission option (form send), a cookie consent banner, and modals for Privacy Policy and Terms of Use for enhanced user interaction and compliance. -->
     <!-- Visualization & Content Choices: 1. Client Segments -> Goal: Compare/Filter -> Method: JS-powered filter buttons dynamically update a list of services. -> Justification: Personalizes the value proposition, making it immediately relevant to the user's profile. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -138,6 +138,25 @@
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
         .cookie-banner.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #10B981; /* Green-500 */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .message-box.active {
             opacity: 1;
             visibility: visible;
         }
@@ -333,7 +352,9 @@
                     <label for="contact-observations" class="block text-gray-700 text-sm font-bold mb-2">Observações:</label>
                     <textarea id="contact-observations" name="observations" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
                 </div>
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Enviar para WhatsApp</button>
+                <div class="flex flex-col gap-4 mt-6">
+                    <button type="submit" id="submit-form-btn" class="bg-[#1E40AF] hover:bg-[#183690] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Enviar Formulário</button>
+                </div>
             </form>
         </div>
     </div>
@@ -385,6 +406,11 @@
                 <button id="decline-cookies" class="border border-white text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors">Rejeitar</button>
             </div>
         </div>
+    </div>
+
+    <!-- Message Box for form submission feedback -->
+    <div id="message-box" class="message-box hidden">
+        Formulário enviado com sucesso!
     </div>
 
     <script>
@@ -488,11 +514,13 @@
             const openContactModalBtn = document.getElementById('open-contact-modal');
             const closeContactModalBtn = document.getElementById('close-contact-modal');
             const contactForm = document.getElementById('contact-form');
+            const submitFormBtn = document.getElementById('submit-form-btn');
+            const messageBox = document.getElementById('message-box');
 
             const privacyPolicyModal = document.getElementById('privacy-policy-modal');
             const openPrivacyPolicyBtn = document.getElementById('open-privacy-policy');
             const closePrivacyPolicyModalBtn = document.getElementById('close-privacy-policy-modal');
-            const cookiePolicyLink = document.getElementById('cookie-policy-link'); // Link in cookie banner
+            const cookiePolicyLink = document.getElementById('cookie-policy-link'); 
 
             const termsOfUseModal = document.getElementById('terms-of-use-modal');
             const openTermsOfUseBtn = document.getElementById('open-terms-of-use');
@@ -508,6 +536,16 @@
                 modal.classList.add('hidden');
             }
 
+            function showMessageBox(message) {
+                messageBox.textContent = message;
+                messageBox.classList.add('active');
+                messageBox.classList.remove('hidden');
+                setTimeout(() => {
+                    messageBox.classList.remove('active');
+                    messageBox.classList.add('hidden');
+                }, 3000);
+            }
+
             openContactModalBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 openModal(contactModal);
@@ -519,14 +557,13 @@
 
             openPrivacyPolicyBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                closeModal(cookieBanner); // Close cookie banner if opened from there
+                closeModal(cookieBanner); 
                 openModal(privacyPolicyModal);
             });
             closePrivacyPolicyModalBtn.addEventListener('click', () => closeModal(privacyPolicyModal));
             privacyPolicyModal.addEventListener('click', (e) => {
                 if (e.target === privacyPolicyModal) closeModal(privacyPolicyModal);
             });
-            // Link from cookie banner to privacy policy
             if (cookiePolicyLink) {
                 cookiePolicyLink.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -534,7 +571,6 @@
                     openModal(privacyPolicyModal);
                 });
             }
-
 
             openTermsOfUseBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -545,20 +581,10 @@
                 if (e.target === termsOfUseModal) closeModal(termsOfUseModal);
             });
 
-            // WhatsApp Form Submission
+            // Form Submission Logic (only "Enviar Formulário" now)
             contactForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const name = document.getElementById('contact-name').value;
-                const email = document.getElementById('contact-email').value;
-                const phone = document.getElementById('contact-phone').value.replace(/\D/g, ''); // Remove non-digits
-                const observations = document.getElementById('contact-observations').value;
-
-                const whatsappNumber = '5511999999999'; // Substitua pelo número de telefone do WhatsApp do Grupo F5 (com código do país e DDD)
-                const message = `Olá, Grupo F5! Meu nome é ${name}, e-mail: ${email}. Telefone: ${phone}. Observações: ${observations}. Gostaria de mais informações.`;
-                
-                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
-                
+                showMessageBox('Formulário enviado com sucesso!');
                 closeModal(contactModal);
                 contactForm.reset();
             });
@@ -570,7 +596,7 @@
 
             const hasConsent = localStorage.getItem('cookieConsent');
             if (!hasConsent) {
-                setTimeout(() => { // Give some time for page to load before showing banner
+                setTimeout(() => { 
                     cookieBanner.classList.add('active');
                     cookieBanner.classList.remove('hidden');
                 }, 1000);
