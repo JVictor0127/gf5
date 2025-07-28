@@ -9,10 +9,600 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutral (stone) with a Dark Slate Blue accent -->
-    <!-- Application Structure Plan: The application transforms the dense strategic guide into a user-centric narrative. It starts with a Hero section (Mission), moves to 'Nossos Serviços' (Value Proposition), then to an interactive 'Para Quem' (Client Segments with JS filtering), followed by 'Nosso Processo' (Activities visualized as a timeline). The 'Nossa Estrutura' section combines Partners, Resources, Revenue, and Costs to build trust and transparency. This flow guides a potential client from understanding the value to seeing the solid foundation of the business, which is more persuasive than the original document's structure. -->
-    <!-- Visualization & Content Choices: 1. Value Proposition -> Goal: Inform -> Method: HTML/Tailwind cards -> Interaction: Hover effect -> Justification: Breaks down the 9 value points into digestible, visually appealing blocks. 2. Client Segments -> Goal: Filter/Relate -> Method: JS filter buttons & dynamic text -> Interaction: Click buttons to show a tailored list of services for each segment -> Justification: Personalizes the experience, making the value proposition immediately relevant to the user. 3. Activities Principais -> Goal: Organize -> Method: HTML/CSS vertical timeline -> Interaction: Visual path -> Justification: Translates the list of activities into a clear, understandable 4-step client journey. 4. Revenue/Costs -> Goal: Compare -> Method: Chart.js Bar Charts -> Interaction: Hover tooltips -> Justification: Bar charts offer a clearer comparison of the magnitude of different revenue/cost streams than a donut chart, enhancing financial transparency. -->
+    <!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo F5 - Consultoria Estratégica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Corporate Blue & Neutral (#0A2342, #1E40AF, #F0F2F5, #FFFFFF) -->
+    <!-- Application Structure Plan: The SPA is structured as a corporate dashboard telling a strategic story. It starts with the core identity ('Quem Somos'), then moves to an interactive exploration of 'Serviços' and 'Clientes'. A visual 'Processo' section clarifies the client journey. This flow is designed for clarity and engagement, guiding stakeholders from brand identity to operational and strategic depth. The SWOT analysis and business structure sections have been removed as requested. New additions include a contact form modal, a cookie consent banner, and modals for Privacy Policy and Terms of Use for enhanced user interaction and compliance. -->
+    <!-- Visualization & Content Choices: 1. Client Segments -> Goal: Compare/Filter -> Method: JS-powered filter buttons dynamically update a list of services. -> Justification: Personalizes the value proposition, making it immediately relevant to the user's profile. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F2F5; /* Light gray background */
+            color: #1f2937; /* Gray-800 for text */
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1E40AF; /* Indigo-700 */
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #1E40AF;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .client-button.active {
+            background-color: #0A2342; /* Dark Blue */
+            color: white;
+            border-color: #0A2342;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 28px;
+            bottom: 0;
+            width: 2px;
+            background-color: #CBD5E1; /* slate-300 */
+        }
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 28px;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            border: 4px solid #F0F2F5; /* Light gray background */
+            background-color: #1E40AF; /* Indigo-700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 1024px) {
+            .chart-container {
+                max-width: 600px;
+                height: 450px;
+            }
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0A2342; /* Dark Blue */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            z-index: 999;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .cookie-banner.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 flex items-center justify-center bg-[#0A2342] text-white font-bold text-xl rounded">F5</div>
+                <h1 class="text-xl font-bold text-[#0A2342]">Grupo F5 Gestão Empresarial</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#identity" class="nav-link font-semibold text-gray-600">Identidade</a>
+                <a href="#services" class="nav-link font-semibold text-gray-600">Serviços</a>
+                <a href="#process" class="nav-link font-semibold text-gray-600">Processo</a>
+                <a href="#contact" class="bg-[#0A2342] text-white px-5 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-colors duration-300">Contato</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-800">
+                <span class="sr-only">Abrir menu</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+             <a href="#identity" class="block py-2 text-gray-600 font-medium">Identidade</a>
+             <a href="#services" class="block py-2 text-gray-600 font-medium">Serviços</a>
+             <a href="#process" class="block py-2 text-gray-600 font-medium">Processo</a>
+             <a href="#contact" class="block mt-3 bg-[#0A2342] text-white px-5 py-2 rounded-full font-semibold text-center">Contato</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="bg-white">
+            <div class="container mx-auto px-6 py-20 text-center">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-[#0A2342] mb-4 leading-tight">Soluções Financeiras para o Crescimento Sustentável</h2>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Promovemos educação e consultoria de qualidade para pessoas e empresas, transformando a gestão financeira em um pilar para o sucesso.</p>
+            </div>
+        </section>
+
+        <section id="identity" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-800">Quem Somos: Nossa Essência</h3>
+                    <p class="text-gray-600 mt-3 max-w-2xl mx-auto">Nossa identidade é a base de tudo que fazemos, guiando nossas ações e nosso compromisso com cada cliente.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="card p-8">
+                        <h4 class="text-2xl font-bold text-[#1E40AF] mb-3">Missão</h4>
+                        <p>Oferecer soluções financeiras personalizadas e acessíveis, contribuindo para o bem-estar e crescimento sustentável dos nossos clientes.</p>
+                    </div>
+                    <div class="card p-8">
+                        <h4 class="text-2xl font-bold text-[#1E40AF] mb-3">Visão</h4>
+                        <p>Ser reconhecido como um grupo de excelência em consultoria e educação financeira no Brasil, destacando-se pelo atendimento humanizado e resultados consistentes.</p>
+                    </div>
+                    <div class="card p-8">
+                        <h4 class="text-2xl font-bold text-[#1E40AF] mb-3">Valores</h4>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>✓ Atendimento Personalizado</li>
+                            <li>✓ Transparência e Confiança</li>
+                            <li>✓ Comprometimento e Ética</li>
+                            <li>✓ Inovação Contínua</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-800">Nossos Serviços e Clientes</h3>
+                    <p class="text-gray-600 mt-3 max-w-2xl mx-auto">Nossas soluções são desenhadas para perfis específicos. Selecione um segmento para ver os serviços em destaque.</p>
+                </div>
+                <div class="flex justify-center flex-wrap gap-3 mb-10">
+                    <button data-filter="pme" class="client-button active border-2 border-transparent text-gray-700 px-5 py-2 rounded-full transition-colors duration-300 font-semibold">PMEs</button>
+                    <button data-filter="ei" class="client-button border-2 border-transparent text-gray-700 px-5 py-2 rounded-full transition-colors duration-300 font-semibold">Empreendedores Individuais</button>
+                    <button data-filter="pf" class="client-button border-2 border-transparent text-gray-700 px-5 py-2 rounded-full transition-colors duration-300 font-semibold">Pessoas Físicas</button>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="services-grid">
+                    <div class="card p-6 service-item" data-segments='["pme", "ei", "pf"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Simplificação e Organização</h4>
+                        <p class="text-sm text-gray-600 mt-2">Organizamos dívidas, receitas e despesas de forma clara e gerenciável.</p>
+                    </div>
+                     <div class="card p-6 service-item" data-segments='["pme"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Aumento de Lucratividade</h4>
+                        <p class="text-sm text-gray-600 mt-2">Estratégias de precificação e gestão de custos para maximizar seus lucros.</p>
+                    </div>
+                     <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Otimização de Fluxo de Caixa</h4>
+                        <p class="text-sm text-gray-600 mt-2">Análise e reestruturação para melhorar a liquidez e a saúde financeira.</p>
+                    </div>
+                     <div class="card p-6 service-item" data-segments='["pf"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Tranquilidade Financeira</h4>
+                        <p class="text-sm text-gray-600 mt-2">Planos para aposentadoria, compra de bens e educação dos filhos.</p>
+                    </div>
+                     <div class="card p-6 service-item" data-segments='["pf", "ei"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Educação Financeira</h4>
+                        <p class="text-sm text-gray-600 mt-2">Capacitamos você para tomar decisões financeiras mais conscientes.</p>
+                    </div>
+                     <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Otimização Tributária</h4>
+                        <p class="text-sm text-gray-600 mt-2">Orientação sobre regimes fiscais para reduzir a carga de impostos legalmente.</p>
+                    </div>
+                    <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Acesso a Capital</h4>
+                        <p class="text-sm text-gray-600 mt-2">Assessoramos na busca por linhas de crédito e investimentos adequados.</p>
+                    </div>
+                    <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Precificação Estratégica</h4>
+                        <p class="text-sm text-gray-600 mt-2">Ajudamos a definir preços de produtos/serviços que garantam lucratividade.</p>
+                    </div>
+                    <div class="card p-6 service-item" data-segments='["pme"]'>
+                        <h4 class="font-bold text-lg text-[#0A2342]">Redução de Custos</h4>
+                        <p class="text-sm text-gray-600 mt-2">Identificamos oportunidades de corte e renegociação para aumentar sua eficiência.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="process" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-800">Nosso Processo de Consultoria</h3>
+                    <p class="text-gray-600 mt-3 max-w-2xl mx-auto">Para garantir resultados consistentemente transparentes, seguimos um processo claro de quatro etapas. Esta seção detalha a jornada que trilhamos com cada cliente, do diagnóstico inicial ao acompanhamento contínuo.</p>
+                </div>
+                <div class="max-w-2xl mx-auto">
+                    <div class="relative pl-8">
+                        <div class="timeline-item pb-12">
+                            <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-1">1. Diagnóstico e Análise</h4>
+                            <p class="text-gray-600">Mergulhamos na sua realidade financeira para entender seus desafios e oportunidades. Utilizamos análises de relatórios, indicadores e entrevistas para construir um panorama completo.</p>
+                        </div>
+                        <div class="timeline-item pb-12">
+                             <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-1">2. Desenvolvimento da Estratégia</h4>
+                            <p class="text-gray-600">Com base no diagnóstico, criamos um plano de ação personalizado. Definimos metas claras, KPIs e uma metodologia robusta para modelagem financeira e valuation, se necessário.</p>
+                        </div>
+                        <div class="timeline-item pb-12">
+                             <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-1">3. Implementação e Suporte</h4>
+                            <p class="text-gray-600">Não apenas entregamos um plano, nós o ajudamos a executá-lo. Oferecemos suporte ativo e gerenciamento de projeto para garantir que as estratégias saiam do papel.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-1">4. Acompanhamento e Otimização</h4>
+                            <p class="text-gray-600">O sucesso financeiro é contínuo. Monitoramos os resultados através de relatórios e dashboards, realizando ajustes e garantindo a qualidade e a melhoria contínua dos resultados.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 bg-[#0A2342] text-white">
+            <div class="container mx-auto px-6 text-center">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Pronto para transformar sua gestão financeira?</h3>
+                <p class="text-gray-300 mb-8 max-w-2xl mx-auto">O primeiro passo para a clareza e o crescimento financeiro está a um clique de distância. Agende uma conversa inicial conosco e descubra como o Grupo F5 pode impulsionar seus resultados.</p>
+                <button id="open-contact-modal" class="bg-white text-[#0A2342] px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition text-lg shadow-lg">Fale com um Especialista</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#0A2342] py-8 text-center text-gray-300">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Grupo F5 Gestão Empresarial. Todos os direitos reservados.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" id="open-privacy-policy" class="text-gray-300 hover:text-white transition-colors">Política de Privacidade</a>
+                <span class="text-gray-500">|</span>
+                <a href="#" id="open-terms-of-use" class="text-gray-300 hover:text-white transition-colors">Termos de Uso</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Contact Form Modal -->
+    <div id="contact-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-contact-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            <h3 class="text-2xl font-bold text-[#0A2342] mb-6">Fale com um Especialista</h3>
+            <form id="contact-form" class="space-y-4">
+                <div>
+                    <label for="contact-name" class="block text-gray-700 text-sm font-bold mb-2">Nome:</label>
+                    <input type="text" id="contact-name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div>
+                    <label for="contact-email" class="block text-gray-700 text-sm font-bold mb-2">E-mail:</label>
+                    <input type="email" id="contact-email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div>
+                    <label for="contact-phone" class="block text-gray-700 text-sm font-bold mb-2">Celular (com DDD):</label>
+                    <input type="tel" id="contact-phone" name="phone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="(XX) XXXXX-XXXX" required>
+                </div>
+                <div>
+                    <label for="contact-observations" class="block text-gray-700 text-sm font-bold mb-2">Observações:</label>
+                    <textarea id="contact-observations" name="observations" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Enviar para WhatsApp</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-policy-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-privacy-policy-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            <h3 class="text-2xl font-bold text-[#0A2342] mb-6">Política de Privacidade</h3>
+            <div class="text-gray-700 text-sm space-y-4">
+                <p>A sua privacidade é importante para nós. Esta política de privacidade explica como o Grupo F5 coleta, usa e protege suas informações pessoais.</p>
+                <p><strong>Coleta de Informações:</strong> Coletamos informações que você nos fornece diretamente, como nome, e-mail e telefone, ao preencher formulários de contato ou se cadastrar em nossos serviços.</p>
+                <p><strong>Uso das Informações:</strong> As informações coletadas são usadas para: (a) fornecer e gerenciar nossos serviços; (b) comunicar-nos com você sobre sua conta ou nossos serviços; (c) personalizar sua experiência; (d) melhorar nossos serviços; e (e) cumprir obrigações legais.</p>
+                <p><strong>Compartilhamento de Informações:</strong> Não compartilhamos suas informações pessoais com terceiros, exceto quando necessário para a prestação de serviços (com parceiros sob acordos de confidencialidade) ou quando exigido por lei.</p>
+                <p><strong>Segurança dos Dados:</strong> Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações contra acesso não autorizado, alteração, divulgação ou destruição.</p>
+                <p><strong>Seus Direitos:</strong> Você tem o direito de acessar, corrigir, atualizar ou solicitar a exclusão de suas informações pessoais a qualquer momento. Entre em contato conosco para exercer esses direitos.</p>
+                <p><strong>Alterações na Política:</strong> Podemos atualizar esta política de privacidade periodicamente. A versão mais recente estará sempre disponível em nosso site.</p>
+                <p>Ao utilizar nossos serviços, você concorda com a coleta e uso de suas informações conforme descrito nesta política.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Use Modal -->
+    <div id="terms-of-use-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-terms-of-use-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            <h3 class="text-2xl font-bold text-[#0A2342] mb-6">Termos de Uso</h3>
+            <div class="text-gray-700 text-sm space-y-4">
+                <p>Bem-vindo(a) ao site do Grupo F5. Ao acessar e utilizar nossos serviços, você concorda em cumprir e estar vinculado(a) aos seguintes termos e condições de uso.</p>
+                <p><strong>1. Aceitação dos Termos:</strong> Ao utilizar este site, você aceita estes Termos de Uso em sua totalidade. Se você não concordar com qualquer parte destes termos, não utilize nosso site.</p>
+                <p><strong>2. Serviços:</strong> O Grupo F5 oferece serviços de consultoria e educação financeira. A descrição detalhada de cada serviço está disponível nas seções pertinentes do site.</p>
+                <p><strong>3. Uso do Site:</strong> Você concorda em usar o site apenas para fins lícitos e de maneira que não infrinja os direitos de, ou restrinja ou iniba o uso e o desfrute do site por terceiros.</p>
+                <p><strong>4. Propriedade Intelectual:</strong> Todo o conteúdo presente neste site, incluindo textos, gráficos, logotipos, ícones, imagens e software, é de propriedade do Grupo F5 ou de seus licenciadores e está protegido por leis de direitos autorais e propriedade intelectual.</p>
+                <p><strong>5. Limitação de Responsabilidade:</strong> O Grupo F5 não será responsável por quaisquer danos diretos, indiretos, incidentais, consequenciais ou punitivos decorrentes do uso ou da incapacidade de usar este site ou nossos serviços.</p>
+                <p><strong>6. Links para Terceiros:</strong> Nosso site pode conter links para sites de terceiros. Não somos responsáveis pelo conteúdo ou pelas práticas de privacidade desses sites.</p>
+                <p><strong>7. Alterações nos Termos:</strong> Reservamo-nos o direito de modificar estes Termos de Uso a qualquer momento. As alterações entrarão em vigor imediatamente após sua publicação no site. É sua responsabilidade revisar estes termos regularmente.</p>
+                <p><strong>8. Lei Aplicável:</strong> Estes Termos de Uso serão regidos e interpretados de acordo com as leis do Brasil.</p>
+                <p>Ao continuar a usar o site após quaisquer modificações, você concorda em ficar vinculado(a) aos termos revisados.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" class="cookie-banner">
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-sm">Utilizamos cookies para melhorar sua experiência de navegação. Ao continuar, você concorda com nossa <a href="#" id="cookie-policy-link" class="underline hover:text-gray-100 transition-colors">Política de Privacidade</a>.</p>
+            <div class="flex gap-4">
+                <button id="accept-cookies" class="bg-white text-[#0A2342] px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors">Aceitar</button>
+                <button id="decline-cookies" class="border border-white text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors">Rejeitar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const clientData = {
+                pme: {
+                    title: 'Para Pequenas e Médias Empresas',
+                    description: 'Focamos em PMEs que buscam crescimento sustentável, sejam startups, empresas familiares ou negócios com desafios de caixa. Nosso objetivo é fortalecer sua estrutura para o sucesso a longo prazo.',
+                    services: [
+                        'Otimização de Fluxo de Caixa',
+                        'Redução de Custos e Despesas',
+                        'Aumento de Lucratividade',
+                        'Acesso a Capital',
+                        'Otimização Tributária'
+                    ]
+                },
+                ei: {
+                    title: 'Para Empreendedores Individuais',
+                    description: 'Apoiamos profissionais que transformaram seu talento em negócio. Ajudamos a organizar as finanças, separar contas PF/PJ, otimizar impostos e precificar serviços para garantir a lucratividade.',
+                    services: [
+                        'Precificação Estratégica',
+                        'Simplificação e Organização Financeira',
+                        'Otimização Tributária',
+                        'Educação Financeira Personalizada'
+                    ]
+                },
+                pf: {
+                    title: 'Para Pessoas Físicas',
+                    description: 'Atendemos indivíduos e famílias de alta renda que buscam organizar seu patrimônio e planejar o futuro com segurança, desde a aposentadoria até a educação dos filhos.',
+                    services: [
+                        'Tranquilidade Financeira (Planejamento)',
+                        'Simplificação e Organização de Dívidas',
+                        'Educação Financeira Personalizada'
+                    ]
+                }
+            };
+
+            const clientButtons = document.querySelectorAll('.client-button');
+            const clientTitle = document.getElementById('client-title');
+            const clientDescription = document.getElementById('client-description');
+            const clientServicesList = document.getElementById('client-services-list');
+            const serviceItems = document.querySelectorAll('.service-item'); 
+
+            function updateClientInfo(filter) {
+                const data = clientData[filter];
+                
+                if (clientTitle) {
+                    clientTitle.textContent = data.title;
+                }
+                if (clientDescription) {
+                    clientDescription.textContent = data.description;
+                }
+                if (clientServicesList) {
+                    clientServicesList.innerHTML = data.services.map(service => 
+                        `<li class="flex items-center gap-3"><span class="text-[#1E40AF] font-bold">✓</span>${service}</li>`
+                    ).join('');
+                }
+
+                serviceItems.forEach(item => {
+                    const segments = JSON.parse(item.dataset.segments);
+                    if (segments.includes(filter)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            clientButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.dataset.filter;
+                    clientButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateClientInfo(filter);
+                });
+            });
+            
+            updateClientInfo('pme');
+
+            const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
+            const sections = document.querySelectorAll('main section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+            sections.forEach(section => observer.observe(section));
+
+            // Modal Logic
+            const contactModal = document.getElementById('contact-modal');
+            const openContactModalBtn = document.getElementById('open-contact-modal');
+            const closeContactModalBtn = document.getElementById('close-contact-modal');
+            const contactForm = document.getElementById('contact-form');
+
+            const privacyPolicyModal = document.getElementById('privacy-policy-modal');
+            const openPrivacyPolicyBtn = document.getElementById('open-privacy-policy');
+            const closePrivacyPolicyModalBtn = document.getElementById('close-privacy-policy-modal');
+            const cookiePolicyLink = document.getElementById('cookie-policy-link'); // Link in cookie banner
+
+            const termsOfUseModal = document.getElementById('terms-of-use-modal');
+            const openTermsOfUseBtn = document.getElementById('open-terms-of-use');
+            const closeTermsOfUseModalBtn = document.getElementById('close-terms-of-use-modal');
+
+            function openModal(modal) {
+                modal.classList.add('active');
+                modal.classList.remove('hidden');
+            }
+
+            function closeModal(modal) {
+                modal.classList.remove('active');
+                modal.classList.add('hidden');
+            }
+
+            openContactModalBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(contactModal);
+            });
+            closeContactModalBtn.addEventListener('click', () => closeModal(contactModal));
+            contactModal.addEventListener('click', (e) => {
+                if (e.target === contactModal) closeModal(contactModal);
+            });
+
+            openPrivacyPolicyBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal(cookieBanner); // Close cookie banner if opened from there
+                openModal(privacyPolicyModal);
+            });
+            closePrivacyPolicyModalBtn.addEventListener('click', () => closeModal(privacyPolicyModal));
+            privacyPolicyModal.addEventListener('click', (e) => {
+                if (e.target === privacyPolicyModal) closeModal(privacyPolicyModal);
+            });
+            // Link from cookie banner to privacy policy
+            if (cookiePolicyLink) {
+                cookiePolicyLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeModal(cookieBanner);
+                    openModal(privacyPolicyModal);
+                });
+            }
+
+
+            openTermsOfUseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(termsOfUseModal);
+            });
+            closeTermsOfUseModalBtn.addEventListener('click', () => closeModal(termsOfUseModal));
+            termsOfUseModal.addEventListener('click', (e) => {
+                if (e.target === termsOfUseModal) closeModal(termsOfUseModal);
+            });
+
+            // WhatsApp Form Submission
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('contact-name').value;
+                const email = document.getElementById('contact-email').value;
+                const phone = document.getElementById('contact-phone').value.replace(/\D/g, ''); // Remove non-digits
+                const observations = document.getElementById('contact-observations').value;
+
+                const whatsappNumber = '5511999999999'; // Substitua pelo número de telefone do WhatsApp do Grupo F5 (com código do país e DDD)
+                const message = `Olá, Grupo F5! Meu nome é ${name}, e-mail: ${email}. Telefone: ${phone}. Observações: ${observations}. Gostaria de mais informações.`;
+                
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                closeModal(contactModal);
+                contactForm.reset();
+            });
+
+            // Cookie Consent Banner Logic
+            const cookieBanner = document.getElementById('cookie-banner');
+            const acceptCookiesBtn = document.getElementById('accept-cookies');
+            const declineCookiesBtn = document.getElementById('decline-cookies');
+
+            const hasConsent = localStorage.getItem('cookieConsent');
+            if (!hasConsent) {
+                setTimeout(() => { // Give some time for page to load before showing banner
+                    cookieBanner.classList.add('active');
+                    cookieBanner.classList.remove('hidden');
+                }, 1000);
+            } else {
+                cookieBanner.classList.add('hidden');
+            }
+
+            acceptCookiesBtn.addEventListener('click', () => {
+                localStorage.setItem('cookieConsent', 'accepted');
+                closeModal(cookieBanner);
+            });
+
+            declineCookiesBtn.addEventListener('click', () => {
+                localStorage.setItem('cookieConsent', 'declined');
+                closeModal(cookieBanner);
+            });
+        });
+    </script>
+</body>
+</html>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
