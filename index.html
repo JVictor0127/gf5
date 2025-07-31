@@ -12,6 +12,7 @@
     <!-- Chosen Palette: Corporate Blue & Neutral (#0A2342, #1E40AF, #F0F2F5, #FFFFFF) -->
     <!-- Application Structure Plan: The SPA is structured as a corporate dashboard telling a strategic story. It starts with the core identity ('Quem Somos'), then moves to an interactive exploration of 'Serviços' and 'Clientes'. A visual 'Processo' section clarifies the client journey. This flow is designed for clarity and engagement, guiding stakeholders from brand identity to operational and strategic depth. The SWOT analysis and business structure sections have been removed as requested. New additions include an on-page contact form with a catchy phrase, a cookie consent banner, and modals for Privacy Policy and Terms of Use for enhanced user interaction and compliance. -->
 
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -75,7 +76,14 @@
             border-radius: 50%;
             border: 4px solid #F0F2F5; /* Light gray background */
             background-color: #1E40AF; /* Indigo-700 */
-        }  
+        }
+
+
+
+
+
+
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -266,6 +274,8 @@
                                     <option value="outros">Outros</option>
                                 </select>
                             </div>
+                            <!-- Campo oculto para o token de segurança -->
+                            <input type="hidden" name="token" value="K0QYjDyFrUrS2Bxf2EzL4euzk2W4MkCP4ExAwupGzE5HcuZDmdpP7jRkhBtYBHYl">
                             <div class="flex flex-col gap-4 mt-6">
                                 <button type="submit" id="submit-form-btn" class="bg-[#1E40AF] hover:bg-[#183690] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full flex items-center justify-center">
                                     Receber mais informações
@@ -411,6 +421,14 @@
         </div>
     </footer>
 
+
+
+
+
+
+
+
+
     <!-- Privacy Policy Modal -->
     <div id="privacy-policy-modal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -473,15 +491,9 @@
                 mobileMenu.classList.toggle('hidden');
             });
 
-            // The clientData object and related elements (clientTitle, clientDescription, clientServicesList)
-            // were not directly used to dynamically update content in the provided HTML structure.
-            // The service filtering logic below correctly handles showing/hiding service cards based on the selected segment.
-            // Therefore, the clientData object and its related DOM manipulations (if any were intended for a separate section)
-            // have been removed to streamline the code and avoid referencing non-existent elements.
-
             const clientButtons = document.querySelectorAll('.client-button');
-
             const serviceItems = document.querySelectorAll('.service-item'); 
+
             /**
              * Updates the visibility of service items based on the selected client filter.
              * @param {string} filter - The data-filter value (e.g., 'pme', 'ei', 'pf').
@@ -525,12 +537,15 @@
                             link.classList.toggle('active', targetId === entry.target.id);
                         });
                     }
+                    // Handle the case where no section is intersecting (e.g., at the very top of the page)
+                    if (!entries.some(entry => entry.isIntersecting)) {
+                        navLinks.forEach(link => link.classList.remove('active'));
+                    }
                 });
             }, { threshold: 0.5 }); // Adjust threshold as needed for when the section is considered 'active'
             sections.forEach(section => observer.observe(section));
 
             // Form Submission Logic
-
             const contactForm = document.getElementById('contact-form');
             const submitFormBtn = document.getElementById('submit-form-btn');
             const loadingSpinner = document.getElementById('loading-spinner');
@@ -636,7 +651,6 @@
             }
 
             // Event listeners for Privacy Policy modal
-
             openPrivacyPolicyBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 closeModal(cookieBanner); // Close cookie banner if it's open
