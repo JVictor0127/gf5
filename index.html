@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grupo F5 - Consultoria Estratégica</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Corporate Blue & Neutral (#0A2342, #1E40AF, #F0F2F5, #FFFFFF) -->
-    <!-- Application Structure Plan: The SPA is structured as a corporate dashboard telling a strategic story. It starts with the core identity ('Quem Somos'), then moves to an interactive exploration of 'Serviços' and 'Clientes'. A visual 'Processo' section clarifies the client journey. This flow is designed for clarity and engagement, guiding stakeholders from brand identity to operational and strategic depth. The SWOT analysis and business structure sections have been removed as requested. New additions include a contact form modal with a single submission option (form send), a cookie consent banner, and modals for Privacy Policy and Terms of Use for enhanced user interaction and compliance. -->
-    <!-- Visualization & Content Choices: 1. Client Segments -> Goal: Compare/Filter -> Method: JS-powered filter buttons dynamically update a list of services. -> Justification: Personalizes the value proposition, making it immediately relevant to the user's profile. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- Application Structure Plan: The SPA is structured as a corporate dashboard telling a strategic story. It starts with the core identity ('Quem Somos'), then moves to an interactive exploration of 'Serviços' and 'Clientes'. A visual 'Processo' section clarifies the client journey. This flow is designed for clarity and engagement, guiding stakeholders from brand identity to operational and strategic depth. The SWOT analysis and business structure sections have been removed as requested. New additions include an on-page contact form with a catchy phrase, a cookie consent banner, and modals for Privacy Policy and Terms of Use for enhanced user interaction and compliance. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -76,21 +73,6 @@
             border-radius: 50%;
             border: 4px solid #F0F2F5; /* Light gray background */
             background-color: #1E40AF; /* Indigo-700 */
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 450px;
-        }
-        @media (min-width: 1024px) {
-            .chart-container {
-                max-width: 600px;
-                height: 450px;
-            }
         }
         .modal-overlay {
             position: fixed;
@@ -160,6 +142,20 @@
             opacity: 1;
             visibility: visible;
         }
+        .loading-indicator {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1E40AF;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -174,7 +170,7 @@
                 <a href="#identity" class="nav-link font-semibold text-gray-600">Identidade</a>
                 <a href="#services" class="nav-link font-semibold text-gray-600">Serviços</a>
                 <a href="#process" class="nav-link font-semibold text-gray-600">Processo</a>
-                <a href="#contact" class="bg-[#0A2342] text-white px-5 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-colors duration-300">Contato</a>
+                <a href="#contact-form-section" class="bg-[#0A2342] text-white px-5 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-colors duration-300">Contato</a>
             </div>
             <button id="mobile-menu-button" class="md:hidden text-gray-800">
                 <span class="sr-only">Abrir menu</span>
@@ -185,15 +181,98 @@
              <a href="#identity" class="block py-2 text-gray-600 font-medium">Identidade</a>
              <a href="#services" class="block py-2 text-gray-600 font-medium">Serviços</a>
              <a href="#process" class="block py-2 text-gray-600 font-medium">Processo</a>
-             <a href="#contact" class="block mt-3 bg-[#0A2342] text-white px-5 py-2 rounded-full font-semibold text-center">Contato</a>
+             <a href="#contact-form-section" class="block mt-3 bg-[#0A2342] text-white px-5 py-2 rounded-full font-semibold text-center">Contato</a>
         </div>
     </header>
 
     <main>
         <section id="hero" class="bg-white">
             <div class="container mx-auto px-6 py-20 text-center">
-                <h2 class="text-4xl md:text-5xl font-extrabold text-[#0A2342] mb-4 leading-tight">Soluções Financeiras para o Crescimento Sustentável</h2>
+                <p class="text-xl md:text-2xl font-semibold text-[#1E40AF] mb-4">Seu futuro financeiro começa aqui.</p>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-[#0A2342] mb-4 leading-tight">Preencha o formulário e dê o primeiro passo rumo à clareza e prosperidade financeira com o Grupo F5.</h2>
                 <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Promovemos educação e consultoria de qualidade para pessoas e empresas, transformando a gestão financeira em um pilar para o sucesso.</p>
+            </div>
+        </section>
+
+        <section id="contact-form-section" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center md:text-left">
+                        <h3 class="text-3xl md:text-4xl font-bold text-[#0A2342] mb-4 leading-tight">Uma consultoria empresarial para quem deseja mais da sua empresa</h3>
+                        <p class="text-lg text-gray-700 max-w-md mx-auto md:mx-0">Você já sabe os próximos passos para seu negócio ficar mais organizado e crescer?</p>
+                    </div>
+                    <div class="card p-8">
+                        <h4 class="text-2xl font-bold text-[#0A2342] mb-6 text-center">Preencha o formulário abaixo</h4>
+                        <form id="contact-form" class="space-y-4">
+                            <div>
+                                <label for="company-name" class="sr-only">Nome da sua empresa</label>
+                                <input type="text" id="company-name" name="companyName" placeholder="Nome da sua empresa" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="company-segment" class="sr-only">Qual o segmento da sua empresa?</label>
+                                <select id="company-segment" name="companySegment" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <option value="">Qual o segmento da sua empresa?</option>
+                                    <option value="tecnologia">Tecnologia</option>
+                                    <option value="varejo">Varejo</option>
+                                    <option value="servicos">Serviços</option>
+                                    <option value="industria">Indústria</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="monthly-revenue" class="sr-only">Qual o faturamento mensal da sua empresa?</label>
+                                <select id="monthly-revenue" name="monthlyRevenue" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <option value="">Qual o faturamento mensal da sua empresa?</option>
+                                    <option value="ate-10k">Até R$ 10.000</option>
+                                    <option value="10k-50k">R$ 10.001 - R$ 50.000</option>
+                                    <option value="50k-200k">R$ 50.001 - R$ 200.000</option>
+                                    <option value="acima-200k">Acima de R$ 200.000</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="your-name" class="sr-only">Qual o seu nome?</label>
+                                <input type="text" id="your-name" name="yourName" placeholder="Qual o seu nome?" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="phone-number" class="sr-only">Número de telefone</label>
+                                <input type="tel" id="phone-number" name="phoneNumber" placeholder="Número de telefone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="corporate-email" class="sr-only">E-mail corporativo</label>
+                                <input type="email" id="corporate-email" name="corporateEmail" placeholder="E-mail corporativo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="how-did-you-arrive" class="sr-only">Como você chegou até nós?</label>
+                                <select id="how-did-you-arrive" name="howDidYouArrive" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <option value="">Como você chegou até nós?</option>
+                                    <option value="indicacao">Indicação</option>
+                                    <option value="redes-sociais">Redes Sociais</option>
+                                    <option value="pesquisa-google">Pesquisa Google</option>
+                                    <option value="evento">Evento</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="main-challenge" class="sr-only">Qual seu principal desafio?</label>
+                                <select id="main-challenge" name="mainChallenge" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <option value="">Qual seu principal desafio?</option>
+                                    <option value="fluxo-de-caixa">Fluxo de Caixa</option>
+                                    <option value="reducao-custos">Redução de Custos</option>
+                                    <option value="aumento-lucratividade">Aumento de Lucratividade</option>
+                                    <option value="acesso-capital">Acesso a Capital</option>
+                                    <option value="organizacao-financeira">Organização Financeira</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-4 mt-6">
+                                <button type="submit" id="submit-form-btn" class="bg-[#1E40AF] hover:bg-[#183690] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full flex items-center justify-center">
+                                    Receber mais informações
+                                    <div id="loading-spinner" class="loading-indicator"></div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -241,23 +320,23 @@
                         <h4 class="font-bold text-lg text-[#0A2342]">Simplificação e Organização</h4>
                         <p class="text-sm text-gray-600 mt-2">Organizamos dívidas, receitas e despesas de forma clara e gerenciável.</p>
                     </div>
-                     <div class="card p-6 service-item" data-segments='["pme"]'>
+                    <div class="card p-6 service-item" data-segments='["pme"]'>
                         <h4 class="font-bold text-lg text-[#0A2342]">Aumento de Lucratividade</h4>
                         <p class="text-sm text-gray-600 mt-2">Estratégias de precificação e gestão de custos para maximizar seus lucros.</p>
                     </div>
-                     <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
+                    <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
                         <h4 class="font-bold text-lg text-[#0A2342]">Otimização de Fluxo de Caixa</h4>
                         <p class="text-sm text-gray-600 mt-2">Análise e reestruturação para melhorar a liquidez e a saúde financeira.</p>
                     </div>
-                     <div class="card p-6 service-item" data-segments='["pf"]'>
+                    <div class="card p-6 service-item" data-segments='["pf"]'>
                         <h4 class="font-bold text-lg text-[#0A2342]">Tranquilidade Financeira</h4>
                         <p class="text-sm text-gray-600 mt-2">Planos para aposentadoria, compra de bens e educação dos filhos.</p>
                     </div>
-                     <div class="card p-6 service-item" data-segments='["pf", "ei"]'>
+                    <div class="card p-6 service-item" data-segments='["pf", "ei"]'>
                         <h4 class="font-bold text-lg text-[#0A2342]">Educação Financeira</h4>
                         <p class="text-sm text-gray-600 mt-2">Capacitamos você para tomar decisões financeiras mais conscientes.</p>
                     </div>
-                     <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
+                    <div class="card p-6 service-item" data-segments='["pme", "ei"]'>
                         <h4 class="font-bold text-lg text-[#0A2342]">Otimização Tributária</h4>
                         <p class="text-sm text-gray-600 mt-2">Orientação sobre regimes fiscais para reduzir a carga de impostos legalmente.</p>
                     </div>
@@ -314,7 +393,7 @@
             <div class="container mx-auto px-6 text-center">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4">Pronto para transformar sua gestão financeira?</h3>
                 <p class="text-gray-300 mb-8 max-w-2xl mx-auto">O primeiro passo para a clareza e o crescimento financeiro está a um clique de distância. Agende uma conversa inicial conosco e descubra como o Grupo F5 pode impulsionar seus resultados.</p>
-                <button id="open-contact-modal" class="bg-white text-[#0A2342] px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition text-lg shadow-lg">Fale com um Especialista</button>
+                <a href="#contact-form-section" class="bg-white text-[#0A2342] px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition text-lg shadow-lg">Fale com um Especialista</a>
             </div>
         </section>
     </main>
@@ -329,35 +408,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Contact Form Modal -->
-    <div id="contact-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button id="close-contact-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
-            <h3 class="text-2xl font-bold text-[#0A2342] mb-6">Fale com um Especialista</h3>
-            <form id="contact-form" class="space-y-4">
-                <div>
-                    <label for="contact-name" class="block text-gray-700 text-sm font-bold mb-2">Nome:</label>
-                    <input type="text" id="contact-name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                </div>
-                <div>
-                    <label for="contact-email" class="block text-gray-700 text-sm font-bold mb-2">E-mail:</label>
-                    <input type="email" id="contact-email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                </div>
-                <div>
-                    <label for="contact-phone" class="block text-gray-700 text-sm font-bold mb-2">Celular (com DDD):</label>
-                    <input type="tel" id="contact-phone" name="phone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="(XX) XXXXX-XXXX" required>
-                </div>
-                <div>
-                    <label for="contact-observations" class="block text-gray-700 text-sm font-bold mb-2">Observações:</label>
-                    <textarea id="contact-observations" name="observations" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-                </div>
-                <div class="flex flex-col gap-4 mt-6">
-                    <button type="submit" id="submit-form-btn" class="bg-[#1E40AF] hover:bg-[#183690] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Enviar Formulário</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Privacy Policy Modal -->
     <div id="privacy-policy-modal" class="modal-overlay hidden">
@@ -421,102 +471,140 @@
                 mobileMenu.classList.toggle('hidden');
             });
 
-            const clientData = {
-                pme: {
-                    title: 'Para Pequenas e Médias Empresas',
-                    description: 'Focamos em PMEs que buscam crescimento sustentável, sejam startups, empresas familiares ou negócios com desafios de caixa. Nosso objetivo é fortalecer sua estrutura para o sucesso a longo prazo.',
-                    services: [
-                        'Otimização de Fluxo de Caixa',
-                        'Redução de Custos e Despesas',
-                        'Aumento de Lucratividade',
-                        'Acesso a Capital',
-                        'Otimização Tributária'
-                    ]
-                },
-                ei: {
-                    title: 'Para Empreendedores Individuais',
-                    description: 'Apoiamos profissionais que transformaram seu talento em negócio. Ajudamos a organizar as finanças, separar contas PF/PJ, otimizar impostos e precificar serviços para garantir a lucratividade.',
-                    services: [
-                        'Precificação Estratégica',
-                        'Simplificação e Organização Financeira',
-                        'Otimização Tributária',
-                        'Educação Financeira Personalizada'
-                    ]
-                },
-                pf: {
-                    title: 'Para Pessoas Físicas',
-                    description: 'Atendemos indivíduos e famílias de alta renda que buscam organizar seu patrimônio e planejar o futuro com segurança, desde a aposentadoria até a educação dos filhos.',
-                    services: [
-                        'Tranquilidade Financeira (Planejamento)',
-                        'Simplificação e Organização de Dívidas',
-                        'Educação Financeira Personalizada'
-                    ]
-                }
-            };
+            // The clientData object and related elements (clientTitle, clientDescription, clientServicesList)
+            // were not directly used to dynamically update content in the provided HTML structure.
+            // The service filtering logic below correctly handles showing/hiding service cards based on the selected segment.
+            // Therefore, the clientData object and its related DOM manipulations (if any were intended for a separate section)
+            // have been removed to streamline the code and avoid referencing non-existent elements.
 
             const clientButtons = document.querySelectorAll('.client-button');
-            const clientTitle = document.getElementById('client-title');
-            const clientDescription = document.getElementById('client-description');
-            const clientServicesList = document.getElementById('client-services-list');
             const serviceItems = document.querySelectorAll('.service-item'); 
 
-            function updateClientInfo(filter) {
-                const data = clientData[filter];
-                
-                if (clientTitle) {
-                    clientTitle.textContent = data.title;
-                }
-                if (clientDescription) {
-                    clientDescription.textContent = data.description;
-                }
-                if (clientServicesList) {
-                    clientServicesList.innerHTML = data.services.map(service => 
-                        `<li class="flex items-center gap-3"><span class="text-[#1E40AF] font-bold">✓</span>${service}</li>`
-                    ).join('');
-                }
-
+            /**
+             * Updates the visibility of service items based on the selected client filter.
+             * @param {string} filter - The data-filter value (e.g., 'pme', 'ei', 'pf').
+             */
+            function updateServiceVisibility(filter) {
                 serviceItems.forEach(item => {
                     const segments = JSON.parse(item.dataset.segments);
                     if (segments.includes(filter)) {
-                        item.style.display = 'block';
+                        item.style.display = 'block'; // Show the service item
                     } else {
-                        item.style.display = 'none';
+                        item.style.display = 'none'; // Hide the service item
                     }
                 });
             }
 
+            // Add event listeners to client filter buttons
             clientButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const filter = button.dataset.filter;
+                    // Remove 'active' class from all buttons and add to the clicked one
                     clientButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
-                    updateClientInfo(filter);
+                    // Update service card visibility based on the selected filter
+                    updateServiceVisibility(filter);
                 });
             });
             
-            updateClientInfo('pme');
+            // Initialize service visibility with the default 'pme' filter on page load
+            updateServiceVisibility('pme');
 
+            // Intersection Observer for active navigation links
             const navLinks = document.querySelectorAll('.nav-link, #mobile-menu a');
             const sections = document.querySelectorAll('main section');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         navLinks.forEach(link => {
-                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                            // Get the target section ID from the href attribute (e.g., #identity -> identity)
+                            const targetId = link.getAttribute('href').substring(1);
+                            // Add or remove 'active' class based on whether the section is intersecting
+                            link.classList.toggle('active', targetId === entry.target.id);
                         });
                     }
                 });
-            }, { threshold: 0.5 });
+            }, { threshold: 0.5 }); // Adjust threshold as needed for when the section is considered 'active'
             sections.forEach(section => observer.observe(section));
 
-            // Modal Logic
-            const contactModal = document.getElementById('contact-modal');
-            const openContactModalBtn = document.getElementById('open-contact-modal');
-            const closeContactModalBtn = document.getElementById('close-contact-modal');
+            // Form Submission Logic
             const contactForm = document.getElementById('contact-form');
             const submitFormBtn = document.getElementById('submit-form-btn');
+            const loadingSpinner = document.getElementById('loading-spinner');
             const messageBox = document.getElementById('message-box');
 
+            // IMPORTANT: Replace this placeholder URL with your actual Google Apps Script Web App URL.
+            // To get this URL:
+            // 1. Go to your Google Apps Script project.
+            // 2. Click on "Deploy" -> "New deployment".
+            // 3. Select "Web app" as the type.
+            // 4. Configure "Execute as" to "Me" and "Who has access" to "Anyone".
+            // 5. Deploy and copy the "Web app URL".
+            // Note: Using 'no-cors' mode means the client-side JavaScript cannot read the server's response
+            // directly. For robust feedback, you'd need to configure CORS on your Apps Script
+            // or use a proxy. This current setup assumes the server processes the request
+            // successfully without needing a client-side response.
+            const APPS_SCRIPT_WEB_APP_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE'; 
+
+            /**
+             * Displays a message box with feedback for the user.
+             * @param {string} message - The message to display.
+             * @param {boolean} isError - True if it's an error message, false for success.
+             */
+            function showMessageBox(message, isError = false) {
+                messageBox.textContent = message;
+                messageBox.style.backgroundColor = isError ? '#EF4444' : '#10B981'; // red-500 or green-500
+                messageBox.classList.add('active');
+                messageBox.classList.remove('hidden');
+                setTimeout(() => {
+                    messageBox.classList.remove('active');
+                    messageBox.classList.add('hidden');
+                }, 3000); // Message disappears after 3 seconds
+            }
+
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent default form submission
+                
+                // Disable button and show spinner during submission
+                submitFormBtn.disabled = true;
+                loadingSpinner.style.display = 'inline-block';
+
+                const formData = new FormData(contactForm);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                // Log form data and URL for debugging
+                console.log('Dados do formulário sendo enviados:', data);
+                console.log('String do corpo da requisição:', new URLSearchParams(data).toString());
+                console.log('URL do Apps Script:', APPS_SCRIPT_WEB_APP_URL);
+
+                try {
+                    // Attempt to send data to Google Apps Script
+                    const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // Required for Apps Script CORS setup (prevents direct response reading)
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams(data).toString(),
+                    });
+
+                    // Since 'no-cors' prevents reading the response, we assume success if no network error occurred.
+                    showMessageBox('Formulário enviado com sucesso!');
+                    contactForm.reset(); // Clear the form fields
+                } catch (error) {
+                    console.error('Erro ao enviar formulário:', error);
+                    showMessageBox('Erro ao enviar formulário. Tente novamente.', true); // Show error message
+                } finally {
+                    // Re-enable button and hide spinner after submission attempt
+                    submitFormBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                }
+            });
+
+            // Privacy Policy and Terms of Use Modals
             const privacyPolicyModal = document.getElementById('privacy-policy-modal');
             const openPrivacyPolicyBtn = document.getElementById('open-privacy-policy');
             const closePrivacyPolicyModalBtn = document.getElementById('close-privacy-policy-modal');
@@ -526,44 +614,36 @@
             const openTermsOfUseBtn = document.getElementById('open-terms-of-use');
             const closeTermsOfUseModalBtn = document.getElementById('close-terms-of-use-modal');
 
+            /**
+             * Opens a given modal by adding 'active' and removing 'hidden' classes.
+             * @param {HTMLElement} modal - The modal element to open.
+             */
             function openModal(modal) {
                 modal.classList.add('active');
                 modal.classList.remove('hidden');
             }
 
+            /**
+             * Closes a given modal by removing 'active' and adding 'hidden' classes.
+             * @param {HTMLElement} modal - The modal element to close.
+             */
             function closeModal(modal) {
                 modal.classList.remove('active');
                 modal.classList.add('hidden');
             }
 
-            function showMessageBox(message) {
-                messageBox.textContent = message;
-                messageBox.classList.add('active');
-                messageBox.classList.remove('hidden');
-                setTimeout(() => {
-                    messageBox.classList.remove('active');
-                    messageBox.classList.add('hidden');
-                }, 3000);
-            }
-
-            openContactModalBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(contactModal);
-            });
-            closeContactModalBtn.addEventListener('click', () => closeModal(contactModal));
-            contactModal.addEventListener('click', (e) => {
-                if (e.target === contactModal) closeModal(contactModal);
-            });
-
+            // Event listeners for Privacy Policy modal
             openPrivacyPolicyBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                closeModal(cookieBanner); 
+                closeModal(cookieBanner); // Close cookie banner if it's open
                 openModal(privacyPolicyModal);
             });
             closePrivacyPolicyModalBtn.addEventListener('click', () => closeModal(privacyPolicyModal));
+            // Close modal when clicking outside the content
             privacyPolicyModal.addEventListener('click', (e) => {
                 if (e.target === privacyPolicyModal) closeModal(privacyPolicyModal);
             });
+            // Handle click from cookie banner's privacy policy link
             if (cookiePolicyLink) {
                 cookiePolicyLink.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -572,21 +652,15 @@
                 });
             }
 
+            // Event listeners for Terms of Use modal
             openTermsOfUseBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 openModal(termsOfUseModal);
             });
             closeTermsOfUseModalBtn.addEventListener('click', () => closeModal(termsOfUseModal));
+            // Close modal when clicking outside the content
             termsOfUseModal.addEventListener('click', (e) => {
                 if (e.target === termsOfUseModal) closeModal(termsOfUseModal);
-            });
-
-            // Form Submission Logic (only "Enviar Formulário" now)
-            contactForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                showMessageBox('Formulário enviado com sucesso!');
-                closeModal(contactModal);
-                contactForm.reset();
             });
 
             // Cookie Consent Banner Logic
@@ -594,24 +668,29 @@
             const acceptCookiesBtn = document.getElementById('accept-cookies');
             const declineCookiesBtn = document.getElementById('decline-cookies');
 
+            // Check if user has previously given consent
             const hasConsent = localStorage.getItem('cookieConsent');
             if (!hasConsent) {
+                // Show banner after a short delay if no consent is found
                 setTimeout(() => { 
                     cookieBanner.classList.add('active');
                     cookieBanner.classList.remove('hidden');
                 }, 1000);
             } else {
+                // Keep banner hidden if consent has been given
                 cookieBanner.classList.add('hidden');
             }
 
+            // Event listener for accepting cookies
             acceptCookiesBtn.addEventListener('click', () => {
-                localStorage.setItem('cookieConsent', 'accepted');
-                closeModal(cookieBanner);
+                localStorage.setItem('cookieConsent', 'accepted'); // Store consent
+                closeModal(cookieBanner); // Hide banner
             });
 
+            // Event listener for declining cookies
             declineCookiesBtn.addEventListener('click', () => {
-                localStorage.setItem('cookieConsent', 'declined');
-                closeModal(cookieBanner);
+                localStorage.setItem('cookieConsent', 'declined'); // Store decline
+                closeModal(cookieBanner); // Hide banner
             });
         });
     </script>
